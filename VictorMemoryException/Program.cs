@@ -50,7 +50,7 @@ namespace VictorMemoryException
 
             var hostname = "SGIU-CCURE30";
             var username = "TESTOPERATOR";
-            var password = "Pa$$word";
+            var password = "PASS";
             var clientName = "Milestone XProtect";
             var clientID = "06031FBF-E237-4602-995C-AB330E2D902C";
             var clientVersion = "3.1";
@@ -105,7 +105,7 @@ namespace VictorMemoryException
                     if (loginData != null)
                     {
                         // Login Succeed
-                        Console.WriteLine($"Login Succeed: Username {username} - {loginData}");
+                        Console.WriteLine($"Login Succeed: {loginData}");
 
                         //Thread.Sleep(1000);
 
@@ -132,8 +132,15 @@ namespace VictorMemoryException
 
         private static LoginData GetLogInData(HttpResponseMessage resp)
         {
-            var session_id = resp.Headers.First(x => x.Key == "session-id").Value;
-            var loginData = new LoginData() { SessionID = session_id.FirstOrDefault().ToString() };
+            var session_id = resp.Headers.First(x => x.Key == "session-id").Value.FirstOrDefault().ToString();
+
+            var response = resp.Content.ReadAsStringAsync().Result;
+            var token = response.Trim('\"');
+
+            var loginData = new LoginData() {
+                SessionID = session_id,
+                Token = token
+            };
             return loginData;
         }
 
