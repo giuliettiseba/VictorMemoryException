@@ -4,6 +4,7 @@ using System.Collections.Specialized;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
 
@@ -47,11 +48,12 @@ namespace VictorMemoryException
         static void Main(string[] args)
         {
 
-            var username = "TESTOPERATOR";
-            var password = "Milestone1$";
-            var ClientName = "Milestone XProtect";
-            var clientID = "06031FBF-E237-4602-995C-AB330E2D902C";
             var hostname = "SGIU-CCURE30";
+            var username = "TESTOPERATOR";
+            var password = "Pa$$word";
+            var clientName = "Milestone XProtect";
+            var clientID = "06031FBF-E237-4602-995C-AB330E2D902C";
+            var clientVersion = "3.1";
 
             Console.Write("Enter hostname: ");
             hostname = Console.ReadLine();
@@ -59,42 +61,42 @@ namespace VictorMemoryException
             username = Console.ReadLine();
             Console.Write("Enter Password: ");
             password = Console.ReadLine();
+            Console.Write("Enter clientName: ");
+            clientName = Console.ReadLine();
             Console.Write("Enter clientID: ");
             clientID = Console.ReadLine();
+            Console.Write("Enter clientVersion: ");
+            clientVersion = Console.ReadLine();
 
             var useHttps = false;
             var port = 80;
             var builder = new UriBuilder();
-
             builder.Scheme = useHttps ? Uri.UriSchemeHttps : Uri.UriSchemeHttp;
             builder.Port = port;
             builder.Host = hostname;
             _baseUri = builder.Uri;
-
             Uri baseUri = _baseUri;
 
-
-
-            string clientName = ClientName;
-
-
-
+            // Header Parameters 
             var kvpList = new List<KeyValuePair<string, string>>();
             kvpList.Add(new KeyValuePair<string, string>("userName", username));
             kvpList.Add(new KeyValuePair<string, string>("password", password));
             kvpList.Add(new KeyValuePair<string, string>("clientName", clientName));
             kvpList.Add(new KeyValuePair<string, string>("clientID", clientID));
-            kvpList.Add(new KeyValuePair<string, string>("clientVersion", "3.1"));
+            kvpList.Add(new KeyValuePair<string, string>("clientVersion", clientVersion));
 
 
+            // Aux variables 
             bool fail = false;
             int count = 0;
+
             while (!fail)
             {
 
                 using (var client = new HttpWebApiClient(baseUri))
                 {
                     count++;
+
                     // Login 
                     var httpcontent = new FormUrlEncodedContent(kvpList);
                     HttpResponseMessage resp = LogIn(httpcontent, client);
@@ -102,19 +104,22 @@ namespace VictorMemoryException
 
                     if (loginData != null)
                     {
-                        Console.WriteLine($"Login Succeced: Username {username} - {loginData}");
+                        // Login Succeed
+                        Console.WriteLine($"Login Succeed: Username {username} - {loginData}");
 
-                        //      Thread.Sleep(1000);
+                        //Thread.Sleep(1000);
 
+                        // Logout Succeed
                         var respLogout = LogOut(client, loginData);
                         if (respLogout.IsSuccessStatusCode)
                         {
-                            Console.WriteLine($"Logout Succeced: {loginData}");
-                            //success = true;
+                            // Logout Succeed
+                            Console.WriteLine($"Logout Succeed: {loginData}");
                         }
                     }
                     else
                     {
+                        // break loop 
                         fail = true;
                         Console.WriteLine($"Fail after {count} logins");
                     }
@@ -154,7 +159,6 @@ namespace VictorMemoryException
             return await client.PostAsync(query, httpcontent);
         }
 
-
         private static string CreateCCureRequestUri(string path, NameValueCollection queryParams, LoginData loginData, string tokenKeyName = "token")
         {
             if (queryParams == null)
@@ -177,6 +181,5 @@ namespace VictorMemoryException
                          select string.Format("{0}={1}", HttpUtility.UrlEncode(key), HttpUtility.UrlEncode(value))).ToArray();
             return (array.Length == 0) ? path : path + "?" + string.Join("&", array);
         }
-
     }
 }
