@@ -105,7 +105,7 @@ namespace VictorMemoryException
                     if (loginData != null)
                     {
                         // Login Succeed
-                        Console.WriteLine($"Login Succeed: {loginData}");
+                        Console.WriteLine($"[{count}] Login Succeed: {loginData}");
 
                         //Thread.Sleep(1000);
 
