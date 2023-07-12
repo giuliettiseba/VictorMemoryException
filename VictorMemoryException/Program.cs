@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -108,11 +109,14 @@ namespace VictorMemoryException
                 using (var client = new HttpWebApiClient(baseUri))
                 {
                     count++;
-
+                    string errorMessage = "";
                     // Login 
                     var httpcontent = new FormUrlEncodedContent(kvpList);
                     HttpResponseMessage resp = LogIn(httpcontent, client);
                     LoginData loginData = resp.IsSuccessStatusCode ? GetLogInData(resp) : null;
+
+                    errorMessage = resp.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+
 
                     if (loginData != null)
                     {
@@ -129,12 +133,16 @@ namespace VictorMemoryException
                             // Logout Succeed
                             Console.WriteLine($"Logout Succeed: {loginData}");
                         }
+                        else 
+                        {
+                            errorMessage = respLogout.Content.ToString();
+                        }
                     }
                     else
                     {
                         // break loop 
                         fail = true;
-                        Console.WriteLine($"Fail after {count} logins");
+                        Console.WriteLine($"Fail after {count} logins. With the error {errorMessage}");
                     }
                 }
                 Console.WriteLine($"Wait {waitTime} sec.");
