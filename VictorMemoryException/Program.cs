@@ -48,25 +48,36 @@ namespace VictorMemoryException
         static void Main(string[] args)
         {
 
-            var hostname = "SGIU-CCURE30";
-            var username = "TESTOPERATOR";
-            var password = "PASS";
+            var hostname = "localhost";
+            var username = "Operator";
+            var password = "Milestone2023..";
             var clientName = "Milestone XProtect";
             var clientID = "06031FBF-E237-4602-995C-AB330E2D902C";
+            var Uuid = "06031FBF-E237-4602-995C-AB330E2D902C";
             var clientVersion = "3.1";
+            var waitTime = 3; // in seconds 
 
-            Console.Write("Enter hostname: ");
-            hostname = Console.ReadLine();
-            Console.Write("Enter Username: ");
-            username = Console.ReadLine();
-            Console.Write("Enter Password: ");
-            password = Console.ReadLine();
-            Console.Write("Enter clientName: ");
-            clientName = Console.ReadLine();
-            Console.Write("Enter clientID: ");
-            clientID = Console.ReadLine();
-            Console.Write("Enter clientVersion: ");
-            clientVersion = Console.ReadLine();
+            //Console.Write("Enter hostname: ");
+            //hostname = Console.ReadLine();
+            //Console.Write("Enter Username: ");
+            //username = Console.ReadLine();
+            //Console.Write("Enter Password: ");
+            //password = Console.ReadLine();
+            //Console.Write("Enter clientName: ");
+            //clientName = Console.ReadLine();
+            //Console.Write("Enter clientID: ");
+            //clientID = Console.ReadLine();
+            //Console.Write("Enter clientVersion: ");
+            //clientVersion = Console.ReadLine();
+
+            bool isNumber;
+            do
+            {
+                Console.Write("Enter wait time: ");
+                var waitTimeStr = Console.ReadLine();
+                isNumber = int.TryParse(waitTimeStr, out waitTime);
+            }
+            while (!isNumber);
 
             var useHttps = false;
             var port = 80;
@@ -84,6 +95,7 @@ namespace VictorMemoryException
             kvpList.Add(new KeyValuePair<string, string>("clientName", clientName));
             kvpList.Add(new KeyValuePair<string, string>("clientID", clientID));
             kvpList.Add(new KeyValuePair<string, string>("clientVersion", clientVersion));
+            kvpList.Add(new KeyValuePair<string, string>("Uuid", Uuid)); 
 
 
             // Aux variables 
@@ -107,7 +119,8 @@ namespace VictorMemoryException
                         // Login Succeed
                         Console.WriteLine($"[{count}] Login Succeed: {loginData}");
 
-                        //Thread.Sleep(1000);
+                        Console.WriteLine($"Wait {waitTime} sec.");
+                        Thread.Sleep(waitTime*1000);
 
                         // Logout Succeed
                         var respLogout = LogOut(client, loginData);
@@ -124,7 +137,8 @@ namespace VictorMemoryException
                         Console.WriteLine($"Fail after {count} logins");
                     }
                 }
-                //Thread.Sleep(1000);
+                Console.WriteLine($"Wait {waitTime} sec.");
+                Thread.Sleep(waitTime * 1000);
             }
             Console.WriteLine("Press a key to exit");
             Console.ReadKey();
